@@ -142,3 +142,86 @@ Everything above is the Opus agent's own report. Lines 90 to 105 repeat lines 74
 - Compare with the same files written by the main model for `01`, `04` and `05`.
 - Remove the Inputs text from `security.md` only after every item has a home and approval. Then add the IN-1 to IN-6 lines, the `SKILL.md` entries, and update the check script (it flags the input files as unlisted until then).
 - Note: this file sits in `input/` but its name does not match the `NN-name.md` pattern, so the check script ignores it. It should not ship.
+
+---
+
+## Comparison: Opus vs Sonnet (2026-10-28)
+
+The same task, the same six stubs, and the same prompt (`001_sonnets-feedback.md`, option A) given to Opus and to Sonnet. One run each. Nothing was run or linted, and the judgment below is the main model's reading of the files, not a test.
+
+### Branches
+
+| Branch | Commit | What it is |
+|---|---|---|
+| `try/migration-with-opus` | `5f19130` | The Opus drafts, unchanged. This file is on this branch. |
+| `try/migration-with-sonnet` | `f8ec05f` | The clean Sonnet run, built on `7383548` (stubs, plan copy without the Status section, issue text, format model). |
+| `try/migration-with-sonnet-informed` | `fe55121` | A first Sonnet run that was not isolated. Its worktree was built from `trunk`, so it read the main checkout, including the Status section and the lessons list from the Opus review. Not a fair test. |
+
+All three are local only. None is pushed.
+
+### How the clean run was kept clean
+
+- Worktree built by hand from `7383548`, outside the main checkout.
+- Plan copy without the Status section (the section lists the Opus fixes, including the correct `absint()` wording).
+- Issue #5 text and the format model (`database/04-identifiers.md`) copied in, so the agent needed no `gh` and no other path.
+- The prompt told the agent to read and write only inside its worktree. That is an instruction, not a block.
+- Check afterward: no `5abc` sentence in `04`, no `current_user_can()` in the `06` sample, "None" lines still bullets. The review fixes did not leak in.
+
+### Results
+
+| Check | Opus | Sonnet (clean) | Sonnet (informed) |
+|---|---|---|---|
+| Total lines, six files | 349 | 367 | 364 |
+| Nonce, option-overwrite and casting samples identical to the source | yes | yes | yes |
+| Rules and attack bullets word for word | all | all | T2 reworded |
+| `NEW` markers left inside the files | 0 | 20 | 15 |
+| "unsure of fit" hedges left inside the files | 0 | 2 | 0 |
+| Space-indented code, short arrays, non-Yoda, em dashes | none | none | none |
+| Contaminated by the review | no | no | yes |
+
+### Where Opus is better
+
+- The notes about what is new are in the report, not in the files. Sonnet wrote `(NEW)` into headings, comments and sentences (20 places) and "(unsure of fit)" into two CWE lines. All of it must be stripped before shipping.
+- The new samples are stronger. `03` uses a `javascript:` URL that becomes stored XSS. `05` uses a webhook HMAC compared with `hash_equals()`. Sonnet's `03` attack bullet is generic ("downstream misuse"), and its `05` sample uses `==` with an undefined `myplugin_run_import()`.
+- `03` says `sanitize_hex_color()` "returns `null` when invalid". Sonnet says "empty result means invalid", which is loose.
+- The casting rule's first Required bullet is kept word for word.
+
+### Where Sonnet is better
+
+- `04` splits the attacks into separate sections (SQL injection, insecure direct object reference), each with its own bulletins. It also states plainly that `%d` already casts.
+- `04` has no `absint()` error.
+- The sanitizer table in `03` has 15 rows (`intval`, `floatval`, `sanitize_html_class`, dates).
+- `04` points to the table in `03` for other types.
+
+### Where Sonnet is worse on the rules
+
+- The casting rule from issue #5 was split into four bullets and reworded, though the prompt said to copy existing rule text.
+
+### Shared weaknesses
+
+- `05` repeats the secrets rule in Prohibited and Required in both runs.
+- Neither `06` callback sample checks a capability.
+- "None specific to this directive." is a bullet in `01` to `03`, unlike the database files.
+- CWE and OWASP picks came from memory in every run and need checking.
+- Neither `04` explains the real limit of `absint()`: `absint( '5abc' )` returns `5` and `absint( array( 'x' ) )` returns `1`. The Opus file states it wrongly; the Sonnet file omits it.
+
+### Caveats
+
+- The "mark NEW" instruction was ambiguous. Opus read it as a list in the report. Sonnet read it as markers inside the files. Part of the difference is the prompt, not the model.
+- One run per model. Different runs may differ.
+- The first Sonnet run is shown only to see how the review changes the output. Do not count it as a model comparison.
+
+### Cleanup effort
+
+- Opus: about three targeted fixes (the `absint()` sentence in `04`, the duplicate in `05`, the "None" format), then the shared items above.
+- Sonnet (clean): strip about 20 markers and two hedges, restore the casting rule's wording, then fix the same shared items.
+
+### Suggested next step
+
+Start from the Opus files. Apply the fixes listed above. Take from Sonnet: the two-section attack structure in `04`, the wider table in `03`, and the cross-reference from `04` to `03`. Strip all markers and hedges from anything taken. Check the CWE, OWASP and `phpcs:ignore` items last.
+
+### Leftovers to clean up (need approval)
+
+- Worktree `.claude/worktrees/agent-ad049f1ef443e15cf` (branch `worktree-agent-ad049f1ef443e15cf`), from the first Sonnet run. Its files are committed on the informed branch.
+- Scratch worktrees under the session scratchpad: `sonnet-clean` (holds `try/migration-with-sonnet`) and `opus-notes` (holds `try/migration-with-opus`).
+- `try/migration-with-sonnet` and `try/migration-with-opus` cannot be checked out in the main checkout while those worktrees exist.
