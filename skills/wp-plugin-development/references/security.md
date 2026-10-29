@@ -315,12 +315,12 @@ add_shortcode( 'myplugin_badge', static function ( $atts ) {
 
 Each directive is summarized here. The full rules (Prohibited, Required, Exceptions), code samples, and attack methodology are in its own file, which `SKILL.md` lists.
 
-- **DB-1, use `$wpdb`:** use `$wpdb` and the WordPress database APIs, never `mysqli_*` or `PDO` (`db-01-use-wpdb.md`).
-- **DB-2, prepare values:** use `$wpdb->prepare()` for every dynamic value, or `$wpdb->insert()` / `update()` / `delete()` with a formats array. Sanitizing is not a substitute (`db-02-prepare-values.md`).
-- **DB-3, dynamic lists:** one placeholder per list item, and handle an empty list before querying (`db-03-dynamic-lists.md`).
-- **DB-4, identifiers:** table names, column names, and `ORDER BY` keys from the request must come from an allowlist and go through `%i` (`db-04-identifiers.md`).
-- **DB-5, raw SQL imports:** the only exception to the SQL rules. Only a plugin-produced file verified against a keyed hash, or an administrator-supplied file, behind a nonce and capability check (`db-05-sql-imports.md`).
-- **DB-6, combined query:** apply DB-2, DB-3, and DB-4 together in one `$wpdb->prepare()` call when a query has both a dynamic list and a request-chosen sort (`db-06-combined-query.md`).
+- **DB-1, use `$wpdb`:** use `$wpdb` and the WordPress database APIs, never `mysqli_*` or `PDO` (`database/01-use-wpdb.md`).
+- **DB-2, prepare values:** use `$wpdb->prepare()` for every dynamic value, or `$wpdb->insert()` / `update()` / `delete()` with a formats array. Sanitizing is not a substitute (`database/02-prepare-values.md`).
+- **DB-3, dynamic lists:** one placeholder per list item, and handle an empty list before querying (`database/03-dynamic-lists.md`).
+- **DB-4, identifiers:** table names, column names, and `ORDER BY` keys from the request must come from an allowlist and go through `%i` (`database/04-identifiers.md`).
+- **DB-5, combined query:** apply DB-2, DB-3, and DB-4 together in one `$wpdb->prepare()` call when a query has both a dynamic list and a request-chosen sort (`database/05-combined-query.md`).
+- **DB-6, raw SQL imports:** the only exception to the SQL rules. Only a plugin-produced file verified against a keyed hash, or an administrator-supplied file, behind a nonce and capability check (`database/06-sql-imports.md`).
 
 ## Code Execution, Uploads, and Files
 

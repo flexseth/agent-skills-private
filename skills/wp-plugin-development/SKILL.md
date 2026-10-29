@@ -83,12 +83,12 @@ Before shipping, work through the checklist in `references/security.md` for ever
 See:
 - `references/security.md` (checklist and cross-cutting rules; read first)
 - Database:
-  - `references/security/db-01-use-wpdb.md` (any code that talks to the database)
-  - `references/security/db-02-prepare-values.md` (any query with a dynamic value)
-  - `references/security/db-03-dynamic-lists.md` (`IN (...)` lists)
-  - `references/security/db-04-identifiers.md` (`ORDER BY`, table, or column names)
-  - `references/security/db-05-sql-imports.md` (backup or import features only)
-  - `references/security/db-06-combined-query.md` (a query with both an `IN (...)` list and a request-chosen sort)
+  - `references/security/database/01-use-wpdb.md` (any code that talks to the database)
+  - `references/security/database/02-prepare-values.md` (any query with a dynamic value)
+  - `references/security/database/03-dynamic-lists.md` (`IN (...)` lists)
+  - `references/security/database/04-identifiers.md` (`ORDER BY`, table, or column names)
+  - `references/security/database/05-combined-query.md` (a query with both an `IN (...)` list and a request-chosen sort)
+  - `references/security/database/06-sql-imports.md` (backup or import features only)
 
 ### 5) Data storage, cron, migrations (if needed)
 
